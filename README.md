@@ -1,3 +1,14 @@
+---
+title: Aura Multilingual Intelligence
+emoji: 🎙️
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: 4.0.0
+app_file: app.py
+pinned: false
+---
+
 # Automatic Notes Maker - Hugging Face Spaces
 
 🎙️ **Live Demo**: Record, transcribe, translate, and analyze audio in 28+ languages!
@@ -50,7 +61,7 @@ English • Spanish • French • German • Italian • Portuguese • Russian
 ## Local Development
 
 ```bash
-pip install -r requirements_hf.txt
+pip install -r requirements.txt
 python app.py
 ```
 
@@ -61,3 +72,4 @@ MIT License
 ---
 
 **Made with ❤️ using Gradio and Python**
+
