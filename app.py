@@ -1,4 +1,5 @@
 import gradio as gr
+from huggingface_hub import InferenceClient
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 from gtts import gTTS
@@ -104,13 +105,38 @@ def extract_keywords(text, num_keywords=5):
 def generate_summary(text, num_sentences=3):
     if not text or not text.strip():
         return "Please provide text to summarize."
+    
+    # 1. Try AI Abstractive Summarization (Handles unpunctuated text better)
+    try:
+        # Use existing HF_TOKEN if available, otherwise anonymous (rate limited but usually fine for demos)
+        client = InferenceClient(model="facebook/bart-large-cnn", token=os.getenv("HF_TOKEN"))
+        # Map 'num_sentences' roughly to token length (approx 20-30 tokens per sentence)
+        max_len = max(30, min(150, num_sentences * 40))
+        min_len = max(10, num_sentences * 10)
+        
+        summary_obj = client.summarization(text, parameters={"min_length": min_len, "max_length": max_len, "truncation": "only_first"})
+        
+        # InferenceClient.summarization usually returns a SummarizationOutput object or list. 
+        # We handle the text extraction safely.
+        if hasattr(summary_obj, 'summary_text'):
+            return summary_obj.summary_text
+        elif isinstance(summary_obj, list) and len(summary_obj) > 0 and 'summary_text' in summary_obj[0]:
+             return summary_obj[0]['summary_text']
+        else:
+             # Fallback if return format is unexpected (e.g. strict string)
+             return str(summary_obj).strip()
+             
+    except Exception as e:
+        print(f"AI Summary failed ({e}), falling back to NLTK...")
+        
+    # 2. Fallback to NLTK Extractive Summarization
     try:
         sentences = sent_tokenize(text)
         if len(sentences) <= num_sentences: return text
         
         stop_words = set(stopwords.words('english'))
         words = [word for word in word_tokenize(text.lower()) if word.isalnum() and word not in stop_words]
-        if not words: return text[:200]
+        if not words: return text[:500] + "..."
         
         word_freq = FreqDist(words)
         sentence_scores = {}
