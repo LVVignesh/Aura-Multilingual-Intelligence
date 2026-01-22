@@ -1,4 +1,5 @@
 gradio>=5.0.0
+huggingface-hub<0.25.0
 SpeechRecognition>=3.10.0
 deep-translator>=1.11.0
 gTTS>=2.3.0
