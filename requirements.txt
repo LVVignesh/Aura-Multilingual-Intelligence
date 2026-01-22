@@ -1,6 +1,6 @@
 gradio>=5.0.0
 SpeechRecognition>=3.10.0
-googletrans==4.0.0-rc1
+deep-translator>=1.11.0
 gTTS>=2.3.0
 pydub>=0.25.1
 nltk>=3.8

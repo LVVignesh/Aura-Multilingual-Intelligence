@@ -1,6 +1,6 @@
 import gradio as gr
 import speech_recognition as sr
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from gtts import gTTS
 import tempfile
 import os
@@ -29,7 +29,7 @@ except LookupError:
     nltk.download('stopwords', quiet=True)
 
 # Initialize translator
-translator = Translator()
+# translator = Translator()  # Not needed for deep-translator as we instantiate per call or use a helper
 
 # Language mapping
 LANGUAGES = {
@@ -84,8 +84,9 @@ def translate_text(text, target_language):
         if target_lang == 'en' and target_language == 'English':
             return text  # No translation needed
         
-        translated = translator.translate(text, src='auto', dest=target_lang)
-        return translated.text
+        # Check if source is auto
+        translated = GoogleTranslator(source='auto', target=target_lang).translate(text)
+        return translated
     except Exception as e:
         return f"Translation error: {str(e)}"
 
